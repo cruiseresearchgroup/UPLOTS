@@ -150,4 +150,4 @@ cd downstream/SparseTSF && bash scripts/run_peak_forecast.sh
 
 ## Acknowledgements
 The generator builds on [Diffusion-TS](https://github.com/Y-debug-sys/Diffusion-TS);
-downstream baselines are [SparseTSF](https://github.com/lss-1138/SparseTSF) and PhaseFormer.
+downstream baselines are [SparseTSF](https://github.com/lss-1138/SparseTSF) and [PhaseFormer](https://github.com/neumyor/PhaseFormer_TSL).
