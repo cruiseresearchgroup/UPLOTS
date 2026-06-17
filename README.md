@@ -1,6 +1,6 @@
 # UPLOTS: A Unified, Prompt-guided Language Model for Constrained Time-Series Generation
 
-Official implementation of **UPLOTS** (CIKM 2026).
+Official implementation of **UPLOTS**.
 
 > Existing time-series generation (TSG) methods handcraft or train a separate model per
 > dataset, which does not scale and ignores temporal structure shared across domains.
@@ -14,6 +14,39 @@ Official implementation of **UPLOTS** (CIKM 2026).
 We evaluate on four real-world benchmarks (ETTh, Energy, PEMS04, PEMS08) under multiple
 constraint families — **peak-period, calendar, load-level, and volatility** — plus
 held-out constraint-combination generalization and downstream forecasting.
+
+---
+
+## Method
+
+**Motivation.** Conventional TSG trains a *separate* model per dataset (Fig. 1a), causing
+task fragmentation, poor cross-domain generalization, and high training cost. UPLOTS uses
+**one** model for all datasets (Fig. 1b), conditioning generation on natural-language
+constraint prompts for cross-domain generalization, prompt-guided adaptability, and
+parameter efficiency.
+
+<p align="center">
+  <img src="assets/introduction.png" width="92%"><br>
+  <b>Figure 1.</b> Existing one-model-per-dataset TSG (left) vs. the unified, prompt-guided UPLOTS (right).
+</p>
+
+**Architecture.** A constraint prompt (e.g. *"Evening Peak Patterns"*) is tokenized and
+embedded by the **Time-series Prompt Embedding Module (TPEM)**
+(`E_pre = WTE(Tokenizer(prompt))`), while the input series `X ∈ ℝ^{B×F×T}` is encoded by a
+`Conv_MLP` layer into `E_ts`. The two are concatenated (`E_cat = concat(E_pre, E_ts)`) and
+fed to a **frozen pre-trained LLM/Transformer backbone** with only lightweight parameters
+adapted (LayerNorm + positional embeddings): `X̂ = LN(Transformer(E_cat))`. Training is
+self-supervised and stabilized across heterogeneous datasets by the **Dynamic Weighted
+Training Strategy** — a *Curriculum-Aware Loss Modulator* that down-weights noisy/trivial
+tasks early, plus *Rolling-Loss-Based Dynamic Sampling* that allocates more updates to
+underperforming datasets. At inference, swapping the prompt generates the target pattern
+on demand.
+
+<p align="center">
+  <img src="assets/overview.png" width="98%"><br>
+  <b>Figure 2.</b> UPLOTS overview: TPEM fuses prompt + series embeddings into a pre-trained
+  LLM backbone, trained self-supervised with the Dynamic Weighted Training Strategy.
+</p>
 
 ---
 
@@ -78,11 +111,11 @@ python main.py --gpu 0 --name mix14_etth_energy --config_file morning_peak_etth 
 bash scripts/02_evaluate.sh        # prints a per-constraint metric table
 ```
 
-### 3. Generalization — zero-shot & few-shot on held-out prompts
+<!-- ### 3. Generalization — zero-shot & few-shot on held-out prompts
 ```bash
 cd uplots && python prepare_fewshot.py && cd ..   # one-time: build few-shot configs
 bash scripts/03_fewshot.sh
-```
+``` -->
 
 ---
 
@@ -107,14 +140,13 @@ cd downstream/SparseTSF && bash scripts/run_peak_forecast.sh
 
 ## Citation
 
-```bibtex
+<!-- ```bibtex
 @inproceedings{yin2026uplots,
   title     = {UPLOTS: A Unified, Prompt-guided Language Model for Constrained Time-Series Generation},
   author    = {Yin, Du and Xue, Hao and Deng, Jinliang and Yang, Yang and Ao, Shuang and Prabowo, Arian and Salim, Flora},
-  booktitle = {Proceedings of the 35th ACM International Conference on Information and Knowledge Management (CIKM)},
   year      = {2026}
 }
-```
+``` -->
 
 ## Acknowledgements
 The generator builds on [Diffusion-TS](https://github.com/Y-debug-sys/Diffusion-TS);
