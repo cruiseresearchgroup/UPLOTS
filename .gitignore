@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Run artifacts
+*.log
+*.out
+*.err
+nohup.out
+.DS_Store
+
+# Experiment outputs / checkpoints
+uplots/OUTPUT/*
+!uplots/OUTPUT/.gitkeep
+Checkpoints_*/
+**/checkpoints/*
+**/results/*
+**/test_results/*
+**/logs/*
+eval_*.json
+*.npy
